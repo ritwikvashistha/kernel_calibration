@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "KiTE"
+name = "kernel_calibration"
 version = "0.1.0"
 authors = [
     { name="Anjie Liu", email="anjie.liu@utexas.edu" },
@@ -14,7 +14,16 @@ description = "KiTE (Kernel-based AI Trustworthiness Examiner) tests local calib
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
 ]
 license = "MIT"
@@ -22,24 +31,56 @@ license-files = ["LICEN[CS]E*"]
 keywords = ["AI", "trustworthiness", "uncertainty", "calibration", "kernel", "evaluation", "machine-learning"]
 dependencies = [
     "jax>=0.4.27",
-    "optax>=0.2.0"
+    "optax>=0.2.0",
+    "numpy>=1.24"
 ]
 
 [project.optional-dependencies]
+viz = [
+    "matplotlib>=3.6"
+]
 test = [
-    "pytest>=7.0"
+    "pytest>=7.0",
+    "matplotlib>=3.6"
+]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.25",
+]
+dev = [
+    "pytest>=7.0",
+    "matplotlib>=3.6",
+    "ruff>=0.4",
+    "build>=1.2",
+    "twine>=5.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/anjieliu121/KiTE"
-Issues = "https://github.com/anjieliu121/KiTE/issues"
+Homepage = "https://github.com/ritwikvashistha/kernel_calibration"
+Documentation = "https://ritwikvashistha.github.io/kernel_calibration/"
+Repository = "https://github.com/ritwikvashistha/kernel_calibration"
+Issues = "https://github.com/ritwikvashistha/kernel_calibration/issues"
+Changelog = "https://github.com/ritwikvashistha/kernel_calibration/blob/main/CHANGELOG.md"
+Paper = "https://arxiv.org/abs/2501.15617"
 
 [tool.hatch.build.targets.wheel]
-packages = ["KiTE"]
+packages = ["kernel_calibration"]
 
 [tool.hatch.build]
 include = [
   "README.md",
   "LICENSE",
-  "KiTE/**/*.py"
+  "kernel_calibration/**/*.py"
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+# RUF022: keep the logically-grouped, commented __all__ lists as authored.
+ignore = ["RUF022"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

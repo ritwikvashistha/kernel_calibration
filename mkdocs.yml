@@ -1,0 +1,49 @@
+site_name: kernel_calibration (KiTE)
+site_description: Kernel local calibration testing, diagnosis, and recalibration.
+repo_url: https://github.com/ritwikvashistha/kernel_calibration
+repo_name: ritwikvashistha/kernel_calibration
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_root_heading: true
+            show_source: true
+            separate_signature: true
+            merge_init_into_class: true
+
+nav:
+  - Home: index.md
+  - Examples: examples.md
+  - API reference: api.md

@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the paper below."
+title: "kernel_calibration (KiTE): Kernel local calibration testing and recalibration"
+abstract: >-
+  A JAX library implementing the Kernel Local Calibration Error (KLCE) for testing
+  whether a binary classifier is locally calibrated, localizing where it is
+  miscalibrated, and recalibrating it.
+type: software
+authors:
+  - family-names: Liu
+    given-names: Anjie
+    affiliation: The University of Texas at Austin
+  - family-names: Vashistha
+    given-names: Ritwik
+    affiliation: The University of Texas at Austin
+  - family-names: Farahi
+    given-names: Arya
+    affiliation: The University of Texas at Austin
+license: MIT
+version: 0.1.0
+repository-code: "https://github.com/ritwikvashistha/kernel_calibration"
+url: "https://ritwikvashistha.github.io/kernel_calibration/"
+keywords:
+  - calibration
+  - local calibration
+  - trustworthiness
+  - kernel methods
+  - machine learning
+preferred-citation:
+  type: conference-paper
+  title: "I-trustworthy Models. A framework for trustworthiness evaluation of probabilistic classifiers"
+  authors:
+    - family-names: Vashistha
+      given-names: Ritwik
+    - family-names: Farahi
+      given-names: Arya
+  collection-title: "Proceedings of the 28th International Conference on Artificial Intelligence and Statistics"
+  year: 2025
+  volume: 258
+  start: 4726
+  end: 4734
+  publisher:
+    name: PMLR
+  url: "https://arxiv.org/abs/2501.15617"

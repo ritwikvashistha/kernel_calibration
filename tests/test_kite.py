@@ -1,9 +1,9 @@
 import jax.numpy as jnp
-import jax.random as random
 import pytest
+from jax import random
 
-from KiTE import KLCE_test, recalibrated_model
-from KiTE.kite import KLCE2_estimator, create_kernel
+from kernel_calibration import KLCE_test, recalibrated_model
+from kernel_calibration.kite import KLCE2_estimator, create_kernel
 
 
 def _synthetic_data(n=16, seed=0):
@@ -63,3 +63,52 @@ def test_recalibrated_model_fit_predict():
     assert p_hat.shape == p.shape
     assert jnp.all(p_hat > 0.0)
     assert jnp.all(p_hat < 1.0)
+
+
+def test_klce_test_result_object():
+    X, y, p = _synthetic_data()
+    result = KLCE_test(X, y, p, 0.2, 50, key=0)
+    # SciPy-style attribute access
+    assert jnp.isfinite(result.statistic)
+    assert 0.0 < float(result.pvalue) <= 1.0
+    assert result.null_distribution.shape == (50,)
+    # ...and still unpacks as a 2-tuple for backward compatibility
+    stat, pval = result
+    assert float(stat) == float(result.statistic)
+    assert float(pval) == float(result.pvalue)
+
+
+def test_klce_test_accepts_int_key_and_numpy():
+    import numpy as np
+
+    rng = np.random.default_rng(0)
+    X = rng.normal(size=(20, 2))
+    p = np.clip(rng.uniform(size=20), 0.05, 0.95)
+    y = (rng.uniform(size=20) > 0.5).astype(float)
+    stat, pval = KLCE_test(X, y, p, 0.2, 50, key=7)
+    assert 0.0 < float(pval) <= 1.0
+
+
+def test_klce_test_uncorrected_pvalue_path():
+    X, y, p = _synthetic_data()
+    _, pval = KLCE_test(X, y, p, 0.2, 50, key=0, add_one_correction=False)
+    assert 0.0 < float(pval) <= 1.0
+
+
+def test_recalibrated_model_fit_returns_self():
+    X, y, p = _synthetic_data(n=12)
+    model = recalibrated_model(num_steps=3, hidden_layer_sizes=(8,), seed=0)
+    assert model.fit(p, X, y) is model
+
+
+def test_recalibrated_model_get_set_params():
+    model = recalibrated_model(alpha=0.3)
+    assert model.get_params()["alpha"] == 0.3
+    assert model.set_params(alpha=0.9) is model
+    assert model.alpha == 0.9
+
+
+def test_recalibrated_model_set_params_invalid_raises():
+    model = recalibrated_model()
+    with pytest.raises(ValueError, match="Invalid parameter"):
+        model.set_params(not_a_param=1)

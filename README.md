@@ -11,7 +11,7 @@ and perform recalibration if needed.
 <!-- Add on release: PyPI version and Zenodo DOI badges. -->
 
 A model can look well calibrated *on average* and still be miscalibrated for
-some particular regions of feature space such as an age ban, an income bracket, a demographic
+some particular regions of feature space such as an age band, an income bracket, a demographic
 group. Standard metrics like ECE are not able to capture these gaps. **Kernel Local Calibration
 Error (KLCE)** is a test statistic which can measure local miscalibration and tests it. It can also be used as a regularization penalty in the loss function to recalibrate a miscalibrated classifier. 
 

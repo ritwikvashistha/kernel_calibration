@@ -1,8 +1,8 @@
 # KiTE — `kernel_calibration`
 
-**Kernel-based AI Trustworthiness Examiner.** A JAX library to test whether a
-binary classifier is **locally calibrated**, to find **where** it is miscalibrated,
-and to **fix** it.
+**Kernel-based AI Trustworthiness Examiner.** A JAX library to test if a
+binary classifier is **locally calibrated**, identify areas of miscalibration,
+and perform recalibration if needed.
 
 [![CI](https://github.com/ritwikvashistha/kernel_calibration/actions/workflows/ci.yml/badge.svg)](https://github.com/ritwikvashistha/kernel_calibration/actions/workflows/ci.yml)
 [![arXiv](https://img.shields.io/badge/arXiv-2501.15617-b31b1b.svg)](https://arxiv.org/abs/2501.15617)
@@ -10,10 +10,10 @@ and to **fix** it.
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org)
 <!-- Add on release: PyPI version and Zenodo DOI badges. -->
 
-A model can look well calibrated *on average* and still be systematically wrong for
-particular regions of feature space — an age band, an income bracket, a demographic
-group. Standard metrics like ECE average that gap away. **Kernel Local Calibration
-Error (KLCE)** measures it, tests it, and localizes it.
+A model can look well calibrated *on average* and still be miscalibrated for
+some particular regions of feature space such as an age ban, an income bracket, a demographic
+group. Standard metrics like ECE are not able to capture these gaps. **Kernel Local Calibration
+Error (KLCE)** is a test statistic which can measure local miscalibration and tests it. It can also be used as a regularization penalty in the loss function to recalibrate a miscalibrated classifier. 
 
 <p align="center">
   <img src="docs/assets/lcb_localization.png" width="90%"

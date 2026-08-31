@@ -27,7 +27,7 @@ from _common import (
 SWEEPS = {
     "smoke": {"ns": [200], "ds": [1, 2], "trials": 30, "iters": 100},
     "small": {"ns": [300, 1000], "ds": [1, 3, 5], "trials": 100, "iters": 200},
-    "full": {"ns": [500, 1000, 2000, 5000], "ds": [1, 2, 5, 10], "trials": 500, "iters": 500},
+    "full": {"ns": [500, 1000, 2000, 5000], "ds": [1, 2, 5, 10], "trials": 200, "iters": 300},
 }
 ALPHA = 0.05
 
@@ -49,25 +49,23 @@ def main():
                     seed = args.seed + 1000 * t
                     X, y, f = calibrated_data(n, d, seed=seed)
                     pw, xw = kc.select_bandwidths(X, f)
-                    for corrected in (True, False):
-                        _, pval = kc.KLCE_test(
-                            X,
-                            y,
-                            f,
-                            pw,
-                            cfg["iters"],
-                            key=seed,
-                            x_kernel_width=xw,
-                            add_one_correction=corrected,
-                        )
+                    # Compute the permutation null ONCE, then derive both the
+                    # corrected and uncorrected p-values from it (halves the cost).
+                    res = kc.KLCE_test(X, y, f, pw, cfg["iters"], key=seed, x_kernel_width=xw)
+                    stat = float(res.statistic)
+                    null = np.asarray(res.null_distribution)
+                    iters = cfg["iters"]
+                    p_corrected = float(res.pvalue)
+                    p_uncorrected = max(1.0 / iters, float(np.sum(null > stat)) / iters)
+                    for corrected, pval in ((True, p_corrected), (False, p_uncorrected)):
                         rows.append(
                             {
                                 "n": n,
                                 "d": d,
                                 "trial": t,
                                 "corrected": corrected,
-                                "pvalue": float(pval),
-                                "reject": float(pval) < ALPHA,
+                                "pvalue": pval,
+                                "reject": pval < ALPHA,
                             }
                         )
     save_table(rows, out / "type_i_raw.csv")

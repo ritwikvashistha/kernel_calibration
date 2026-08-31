@@ -41,7 +41,7 @@ SWEEPS = {
         "betas": [0.25, 0.5, 1.0, 2.0],
         "steps": 1500,
         "lr": 0.03,
-        "trials": 5,
+        "trials": 3,
         "iters": 300,
     },
 }

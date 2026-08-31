@@ -30,6 +30,12 @@ All notable changes to this project are documented here. The format is based on
 - `recalibrated_model` follows the scikit-learn estimator conventions:
   `verbose` is silent by default, `fit` returns `self`, and `get_params` /
   `set_params` are available.
+- **`recalibrated_model` defaults revised** (validated by the `experiments/` sweep):
+  `alpha=0.02`, `beta=1.0`, `learning_rate=0.01`, and `sigma_k`/`sigma_l` now
+  default to `None` and are auto-selected by the median heuristic during `fit`.
+  The old defaults (`alpha=beta=0.5`, fixed widths) barely reduced miscalibration;
+  the new ones cut ECE substantially out of the box while preserving AUC.
+  `recalibrated_model().fit(f, X, y)` now works well with no tuning.
 - `rbf_kernel` now supports rectangular kernels (different sample counts).
 
 ## [0.1.0]

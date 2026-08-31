@@ -87,10 +87,9 @@ bias = kc.local_calibration_bias(X, y, f, prob_w, x_w)   # signed bias per point
 ...and fix it:
 
 ```python
-model = kc.recalibrated_model(sigma_k=prob_w, sigma_l=x_w,
-                              alpha=0.02, beta=1.0, num_steps=1500, learning_rate=0.03)
+model = kc.recalibrated_model()      # sensible defaults; kernel widths auto-selected
 model.fit(f, X, y)
-f_hat = model.predict_proba(f, X)                 # locally calibrated probabilities
+f_hat = model.predict_proba(f, X)    # locally calibrated probabilities
 ```
 
 <p align="center">

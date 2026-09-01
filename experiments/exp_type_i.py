@@ -153,7 +153,8 @@ def _plot(df, summary_df, out):
     ax.set_xlabel("n")
     ax.set_ylabel(f"rejection rate (alpha={ALPHA})")
     ax.set_title("Type-I error control (corrected p-value)")
-    ax.legend()
+    ax.set_ylim(0, 1)  # full [0, 1] range: rejection rate sits flat near alpha
+    ax.legend(loc="upper right")
     savefig(fig, out / "type_i_rejection.png")
 
     # p-value ECDF for the largest (n, d) cell — should track the diagonal.

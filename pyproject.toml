@@ -47,6 +47,12 @@ docs = [
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
 ]
+experiments = [
+    "pandas>=1.5",
+    "scikit-learn>=1.0",
+    "matplotlib>=3.6",
+    "scipy>=1.9",
+]
 dev = [
     "pytest>=7.0",
     "matplotlib>=3.6",

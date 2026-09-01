@@ -34,3 +34,17 @@ def test_recalibration_reduces_local_miscalibration():
 
     assert abs(float(stat_after)) < abs(float(stat_before))
     assert expected_calibration_error(y, f_hat) < ece_before
+
+
+def test_recalibrated_model_auto_bandwidth_defaults():
+    """recalibrated_model() with no params set auto-selects kernel widths (median
+    heuristic) and reduces ECE out of the box."""
+    X, y, f = make_calibration_data(n=1200, miscalibration=0.25, seed=5)
+    ece_before = expected_calibration_error(y, f)
+
+    model = recalibrated_model(num_steps=600, seed=0)  # all other defaults
+    model.fit(f, X, y)
+
+    assert model._sigma_k is not None and model._sigma_l is not None
+    f_hat = np.asarray(model.predict_proba(f, X))
+    assert expected_calibration_error(y, f_hat) < ece_before

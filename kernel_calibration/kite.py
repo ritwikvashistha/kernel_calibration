@@ -392,12 +392,12 @@ class recalibrated_model:
 
     def __init__(
         self,
-        sigma_k: float = 0.1,
-        sigma_l: float = 1.0,
-        alpha: float = 0.5,
-        beta: float = 0.5,
+        sigma_k: Optional[float] = None,
+        sigma_l: Optional[float] = None,
+        alpha: float = 0.02,
+        beta: float = 1.0,
         num_steps: int = 1000,
-        learning_rate: float = 0.001,
+        learning_rate: float = 0.01,
         hidden_layer_sizes: tuple[int, ...] = (64, 64),
         seed: int = 121,
         verbose: bool = False,
@@ -405,20 +405,26 @@ class recalibrated_model:
         """
         Initialize hyperparameters for the recalibration model.
 
+        The defaults are chosen to reliably reduce local miscalibration while
+        preserving ranking (see the ``experiments/`` sweep): a heavy KLCE penalty
+        with light distillation, and kernel widths selected by the median heuristic.
+
         Parameters
         ----------
         sigma_k : float, optional
-            Kernel width for probability kernel. Default is 0.1.
+            Kernel width for the probability kernel. If None (default), it is set
+            by the median heuristic on the base probabilities during ``fit``.
         sigma_l : float, optional
-            Kernel width for feature kernel. Default is 1.0.
+            Kernel width for the feature kernel. If None (default), it is set by
+            the median heuristic on the features during ``fit``.
         alpha : float, optional
-            Weight for the distillation loss term. Default is 0.5.
+            Weight for the distillation loss term. Default is 0.02.
         beta : float, optional
-            Weight for the KLCE penalty term. Default is 0.5.
+            Weight for the KLCE penalty term. Default is 1.0.
         num_steps : int, optional
             Number of training steps. Default is 1000.
         learning_rate : float, optional
-            Optimizer learning rate. Default is 0.001.
+            Optimizer learning rate. Default is 0.01.
         hidden_layer_sizes : Tuple[int, ...], optional
             Sizes of hidden MLP layers. Default is (64, 64).
         seed : int, optional
@@ -435,6 +441,9 @@ class recalibrated_model:
         self.hidden_layer_sizes = hidden_layer_sizes
         self.seed = seed
         self.verbose = verbose
+        # Effective kernel widths, resolved in fit() (auto-selected when None).
+        self._sigma_k: Optional[float] = None
+        self._sigma_l: Optional[float] = None
         self.params: Optional[dict[str, jnp.ndarray]] = None
         self.loss_history: Optional[list[float]] = None
 
@@ -504,7 +513,7 @@ class recalibrated_model:
         kl_div = base_probs_stable * log_ratio1 + (1 - base_probs_stable) * log_ratio2
         distill_loss = jnp.mean(kl_div)
         x_2d = x[:, None] if x.ndim == 1 else x
-        klce_loss = KLCE2_boosting(f_recalibrated, x_2d, y, self.sigma_k, self.sigma_l)
+        klce_loss = KLCE2_boosting(f_recalibrated, x_2d, y, self._sigma_k, self._sigma_l)
         return self.alpha * distill_loss + self.beta * klce_loss
 
     def fit(self, y_proba: jnp.ndarray, x_cal: jnp.ndarray, y: jnp.ndarray) -> "recalibrated_model":
@@ -534,6 +543,13 @@ class recalibrated_model:
         rng = random.PRNGKey(self.seed)
         if x_cal.ndim == 1:
             x_cal = x_cal[:, None]
+        # Resolve kernel widths — median heuristic for any left as None.
+        if self.sigma_k is None or self.sigma_l is None:
+            from .bandwidth import select_bandwidths
+
+            pw, xw = select_bandwidths(x_cal, y_proba)
+        self._sigma_k = self.sigma_k if self.sigma_k is not None else pw
+        self._sigma_l = self.sigma_l if self.sigma_l is not None else xw
         input_dim = 2 + x_cal.shape[1]
         layer_sizes = [input_dim] + list(self.hidden_layer_sizes) + [1]
         params = init_recalibrated_model_params(rng, layer_sizes)

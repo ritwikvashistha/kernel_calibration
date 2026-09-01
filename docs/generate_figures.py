@@ -43,17 +43,9 @@ def fig_localization():
 def fig_recalibration():
     """Reliability diagram before vs. after KLCE recalibration."""
     X, y, f = kc.make_calibration_data(n=2000, miscalibration=0.25, seed=1)
-    pw, xw = kc.select_bandwidths(X, f)
 
-    model = kc.recalibrated_model(
-        sigma_k=pw,
-        sigma_l=xw,
-        alpha=0.02,
-        beta=1.0,
-        num_steps=1500,
-        learning_rate=0.03,
-        seed=0,
-    )
+    # Default hyperparameters + auto-selected kernel widths.
+    model = kc.recalibrated_model(num_steps=1500, seed=0)
     model.fit(f, X, y)
     f_hat = np.asarray(model.predict_proba(f, X))
 

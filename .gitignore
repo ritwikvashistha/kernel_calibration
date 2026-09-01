@@ -15,3 +15,5 @@ site/
 .ipynb_checkpoints/
 experiments/results/
 runs/
+# Local-only working docs (experiment.md holds server access details — never commit)
+experiment.md
